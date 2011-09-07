@@ -19,38 +19,32 @@ class PHPProposal(gobject.GObject, gsv.CompletionProposal):
         self.proposal = proposal
 
     def do_get_text(self):
-        return self.proposal['name']
+        text = self.proposal['name']
+        if self.is_constant():
+            return text
+
+        required, optional = self.format_params()
+        # we only care about required params if any
+        return '%s(%s)' % (text, required)
 
     def do_get_label(self):
         label = self.proposal['name']
-        params = self.proposal.get('params', '')
-
-        prop_type = self.proposal.get('type', '')
-        if prop_type == 'constant':
+        if self.is_constant():
             return label
 
-        if params:
-            required = optional = None
-            if 'required' in params:
-                required = ', '.join(params['required'])
-            if 'optional' in params:
-                optional = [
-                    '[, %s]' % option for option in params['optional']
-                ]
-                optional = ' '.join(optional)
-
+        required, optional = self.format_params()
+        if required:
+            params = required
+        if optional:
             if required:
-                params = required
-            if optional:
-                if required:
-                    params = '%s %s' % (params, optional)
-                else:
-                    # str is immutable
-                    option = list(optional)
-                    # no need for first ', ' characters
-                    del option[1:3]
-                    optional = ''.join(option)
-                    params = optional
+                params = '%s %s' % (params, optional)
+            else:
+                # str is immutable
+                option = list(optional)
+                # no need for first ', ' characters
+                del option[1:3]
+                optional = ''.join(option)
+                params = optional
         return '%s(%s)' % (label, params)
 
     def do_get_info(self):
@@ -59,6 +53,18 @@ class PHPProposal(gobject.GObject, gsv.CompletionProposal):
             return gobject.markup_escape_text(info)
         return _('Info is not available')
 
+    def format_params(self):
+        params = self.proposal.get('params', '')
+        required = optional = ''
+        if 'required' in params:
+            required = ', '.join(params['required'])
+        if 'optional' in params:
+            optional = ['[, %s]' % option for option in params['optional']]
+            optional = ' '.join(optional)
+        return required, optional
+
+    def is_constant(self):
+        return self.proposal.get('type', '') == 'constant'
 
 class PHPProvider(gobject.GObject, gsv.CompletionProvider):
 
