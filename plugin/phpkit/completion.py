@@ -4,6 +4,7 @@ import gobject
 import gtksourceview2 as gsv
 import os
 from gettext import gettext as _
+from glob import glob
 
 try:
     import json
@@ -22,7 +23,12 @@ class PHPProposal(gobject.GObject, gsv.CompletionProposal):
 
     def do_get_label(self):
         label = self.proposal['name']
-        params = self.proposal['params']
+        params = self.proposal.get('params', '')
+
+        prop_type = self.proposal.get('type', '')
+        if prop_type == 'constant':
+            return label
+
         if params:
             required = optional = None
             if 'required' in params:
@@ -48,9 +54,10 @@ class PHPProposal(gobject.GObject, gsv.CompletionProposal):
         return '%s(%s)' % (label, params)
 
     def do_get_info(self):
-        if not self.proposal['info']:
-            return _('Info is not available')
-        return gobject.markup_escape_text(self.proposal['info'])
+        info = self.proposal['info']
+        if info:
+            return gobject.markup_escape_text(info)
+        return _('Info is not available')
 
 
 class PHPProvider(gobject.GObject, gsv.CompletionProvider):
@@ -105,15 +112,14 @@ class PHPProvider(gobject.GObject, gsv.CompletionProvider):
     def get_proposals(self, keyword, tag='php_internal'):
         tagpath = os.path.join(self.tags_root, tag)
         proposals = []
-        lookups = ['classes', 'interfaces', 'functions']
+        lookups = glob(os.path.join(tagpath, '*.json'))
 
         for lookup in lookups:
-            filepath = os.path.join(tagpath, '%s.json' % lookup)
             candidates = []
-            if os.path.isfile(filepath):
-                f = open(filepath)
-                candidates = json.load(f)
-                f.close()
+
+            f = open(lookup)
+            candidates = json.load(f)
+            f.close()
 
             if candidates:
                 for candidate in candidates:
