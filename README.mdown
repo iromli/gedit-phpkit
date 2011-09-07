@@ -1,0 +1,7 @@
+# Gedit PHPKit Plugin
+
+[Re-Work In Progress] A toolkit to ease PHP development for Gedit 2.
+
+## Note
+
+This would be a complete rewrite of my old [phpkit](https://bitbucket.org/iromli/gedit-phpkit-old/overview) plugin.
