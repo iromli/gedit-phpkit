@@ -15,20 +15,42 @@ class PHPProposal(gobject.GObject, gsv.CompletionProposal):
 
     def __init__(self, proposal):
         gobject.GObject.__init__(self)
-        self.name = proposal['name']
-        self.info = proposal['info']
-        self.params = proposal['params']
+        self.proposal = proposal
 
     def do_get_text(self):
-        return self.name
+        return self.proposal['name']
 
     def do_get_label(self):
-        return self.name
+        label = self.proposal['name']
+        params = self.proposal['params']
+        if params:
+            required = optional = None
+            if 'required' in params:
+                required = ', '.join(params['required'])
+            if 'optional' in params:
+                optional = [
+                    '[, %s]' % option for option in params['optional']
+                ]
+                optional = ' '.join(optional)
+
+            if required:
+                params = required
+            if optional:
+                if required:
+                    params = '%s %s' % (params, optional)
+                else:
+                    # str is immutable
+                    option = list(optional)
+                    # no need for first ', ' characters
+                    del option[1:3]
+                    optional = ''.join(option)
+                    params = optional
+        return '%s(%s)' % (label, params)
 
     def do_get_info(self):
-        if not self.info:
+        if not self.proposal['info']:
             return _('Info is not available')
-        return gobject.markup_escape_text(self.info)
+        return gobject.markup_escape_text(self.proposal['info'])
 
 
 class PHPProvider(gobject.GObject, gsv.CompletionProvider):
@@ -67,9 +89,11 @@ class PHPProvider(gobject.GObject, gsv.CompletionProvider):
         textiter = context.get_iter()
         buff = textiter.get_buffer()
         start, word = self.get_word(textiter)
-        proposals = self.get_proposals(word)
-        self.move_mark(buff, start)
-        context.add_proposals(self, proposals, True)
+        if not word:
+            context.add_proposals(self, [], True)
+        else:
+            self.move_mark(buff, start)
+            context.add_proposals(self, self.get_proposals(word), True)
 
     def move_mark(self, buff, start):
         mark = buff.get_mark(self.MARK_NAME)
