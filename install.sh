@@ -4,7 +4,6 @@ PHPKIT=$(dirname $(readlink -f ${BASH_SOURCE[0]}))
 GEDIT_PLUGIN_DIR=~/.gnome2/gedit/plugins
 
 echo "installing phpkit plugin"
-if [[ ! -d $GEDIT_PLUGIN_DIR ]]; then
-    mkdir -p $GEDIT_PLUGIN_DIR
-fi
+mkdir -p $GEDIT_PLUGIN_DIR
 cp -R $PHPKIT/plugin/phpkit* $GEDIT_PLUGIN_DIR
+rm -rf $GEDIT_PLUGIN_DIR/phpkit/*.py[co]
