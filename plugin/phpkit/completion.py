@@ -21,7 +21,7 @@ class PHPProposal(gobject.GObject, gsv.CompletionProposal):
 
     def do_get_text(self):
         text = self.proposal['name']
-        if self.is_constant():
+        if self.is_constant() or self.is_interface():
             return text
 
         required, optional = self.format_params()
@@ -30,7 +30,7 @@ class PHPProposal(gobject.GObject, gsv.CompletionProposal):
 
     def do_get_label(self):
         label = self.proposal['name']
-        if self.is_constant():
+        if self.is_constant() or self.is_interface():
             return label
 
         params = ''
@@ -67,6 +67,9 @@ class PHPProposal(gobject.GObject, gsv.CompletionProposal):
 
     def is_constant(self):
         return self.proposal.get('type', '') == 'constant'
+
+    def is_interface(self):
+        return self.proposal.get('type', '') == 'interface'
 
 
 class PHPProvider(gobject.GObject, gsv.CompletionProvider):
