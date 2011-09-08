@@ -33,6 +33,7 @@ class PHPProposal(gobject.GObject, gsv.CompletionProposal):
         if self.is_constant():
             return label
 
+        params = ''
         required, optional = self.format_params()
         if required:
             params = required
