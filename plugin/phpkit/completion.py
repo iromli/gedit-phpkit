@@ -67,9 +67,12 @@ class PHPProposal(gobject.GObject, gsv.CompletionProposal):
     def is_constant(self):
         return self.proposal.get('type', '') == 'constant'
 
+
 class PHPProvider(gobject.GObject, gsv.CompletionProvider):
 
     MARK_NAME = 'PHPProviderCompletionMark'
+
+    TAGS = {}
 
     def __init__(self, plugin):
         gobject.GObject.__init__(self)
@@ -134,20 +137,30 @@ class PHPProvider(gobject.GObject, gsv.CompletionProvider):
 
     def get_proposals(self, keyword, tag='php_internal'):
         tagpath = os.path.join(self.tags_root, tag)
+
+        if not tag in self.TAGS:
+            self.TAGS[tag] = {}
+
+        if not self.TAGS[tag]:
+            filepaths = glob(os.path.join(tagpath, '*.json'))
+            for filepath in filepaths:
+                try:
+                    f = open(filepath)
+                    self.TAGS[tag][os.path.basename(filepath)] = json.load(f)
+                    f.close()
+                except IOError:
+                    pass
+
         proposals = []
-        lookups = glob(os.path.join(tagpath, '*.json'))
+        candidates = self.TAGS[tag].iteritems()
 
-        for lookup in lookups:
-            candidates = []
-
-            f = open(lookup)
-            candidates = json.load(f)
-            f.close()
-
-            if candidates:
-                for candidate in candidates:
-                    if candidate['name'].startswith(keyword) is True:
-                        proposals.append(PHPProposal(candidate))
+        for key, itemlist in candidates:
+            try:
+                for item in itemlist:
+                    if item['name'].startswith(keyword) is True:
+                        proposals.append(PHPProposal(item))
+            except KeyError:
+                pass
         return proposals
 
     def get_word(self, textiter):
