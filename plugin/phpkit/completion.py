@@ -139,7 +139,8 @@ class PHPProvider(gobject.GObject, gsv.CompletionProvider):
         else:
             buff.move_mark(mark, start)
 
-    def get_proposals(self, keyword, tag='php_internal'):
+    def get_proposals(self, keyword):
+        tag = 'php_internal'
         tagpath = os.path.join(self.tags_root, tag)
 
         if not tag in self.TAGS:
