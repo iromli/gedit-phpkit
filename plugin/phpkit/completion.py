@@ -5,6 +5,7 @@ import gtksourceview2 as gsv
 import os
 from gettext import gettext as _
 from glob import glob
+import re
 
 try:
     import json
@@ -83,7 +84,23 @@ class PHPProvider(gobject.GObject, gsv.CompletionProvider):
         return gsv.COMPLETION_ACTIVATION_USER_REQUESTED
 
     def do_activate_proposal(self, proposal, textiter):
-        return False
+        # TODO: consider to use placeholder similar to snippet's magic
+        buff = textiter.get_buffer()
+        buff.begin_user_action()
+        text = proposal.do_get_text()
+
+        start, word = self.get_word(textiter)
+        text = '%s' % re.sub(r'^%s' % word, '', text)
+        buff.insert_at_cursor(text)
+
+        start = buff.get_iter_at_mark(buff.get_insert())
+        if '(' in text:
+            while not start.get_char() == '(':
+                start.backward_char()
+            start.forward_char()
+        buff.place_cursor(start)
+        buff.end_user_action()
+        return True
 
     def do_match(self, context):
         lang = context.get_iter().get_buffer().get_language()
