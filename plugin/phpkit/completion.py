@@ -76,13 +76,13 @@ class PHPProvider(gobject.GObject, gsv.CompletionProvider):
 
     MARK_NAME = 'PHPProviderCompletionMark'
 
-    TAGS = {}
+    BUNDLES = {}
 
     def __init__(self, plugin):
         gobject.GObject.__init__(self)
         self.mark = None
         self._plugin = plugin
-        self.tags_root = os.path.join(os.path.dirname(__file__), 'tags')
+        self.bundles_root = os.path.join(os.path.dirname(__file__), 'bundles')
 
     def do_get_name(self):
         return _('PHP')
@@ -140,24 +140,24 @@ class PHPProvider(gobject.GObject, gsv.CompletionProvider):
             buff.move_mark(mark, start)
 
     def get_proposals(self, keyword):
-        tag = 'php_internal'
-        tagpath = os.path.join(self.tags_root, tag)
+        bundle = 'php_internal.pbundle'
+        bundlepath = os.path.join(self.bundles_root, bundle)
 
-        if not tag in self.TAGS:
-            self.TAGS[tag] = {}
+        if not bundle in self.BUNDLES:
+            self.BUNDLES[bundle] = {}
 
-        if not self.TAGS[tag]:
-            filepaths = glob(os.path.join(tagpath, '*.json'))
+        if not self.BUNDLES[bundle]:
+            filepaths = glob(os.path.join(bundlepath, '*.json'))
             for filepath in filepaths:
                 try:
                     f = open(filepath)
-                    self.TAGS[tag][os.path.basename(filepath)] = json.load(f)
+                    self.BUNDLES[bundle][os.path.basename(filepath)] = json.load(f)
                     f.close()
                 except IOError:
                     pass
 
         proposals = []
-        candidates = self.TAGS[tag].iteritems()
+        candidates = self.BUNDLES[bundle].iteritems()
 
         for key, itemlist in candidates:
             try:
