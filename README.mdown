@@ -13,8 +13,8 @@ A toolkit to ease PHP development for Gedit 2.
     Example:
 
         phpkit
-        | tags
-          | php_internal
+        | bundles
+          | php_internal.pbundle
             | classes.json
             | constants.json
             | functions.json
