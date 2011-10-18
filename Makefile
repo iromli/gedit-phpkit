@@ -17,4 +17,4 @@ symlink:
 	@echo "symlinking phpkit plugin";
 	@rm -rf $(GEDIT_PLUGIN_DIR)/phpkit*;
 	@ln -s $(PHPKIT_DIR)/plugin/phpkit $(GEDIT_PLUGIN_DIR)/phpkit;
-	@ln -s $(PHPKIT_DIR)/plugin/phpkit.gedit-plugin $(GEDIT_PLUGIN_DIR)/phpkit-gedit-plugin;
+	@ln -s $(PHPKIT_DIR)/plugin/phpkit.gedit-plugin $(GEDIT_PLUGIN_DIR)/phpkit.gedit-plugin;
