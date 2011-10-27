@@ -140,7 +140,7 @@ class PHPProvider(gobject.GObject, gsv.CompletionProvider):
             buff.move_mark(mark, start)
 
     def get_proposals(self, keyword):
-        bundle = 'php_internal.pbundle'
+        bundle = 'php_internal.bundle'
         bundlepath = os.path.join(self.bundles_root, bundle)
 
         if not bundle in self.BUNDLES:
