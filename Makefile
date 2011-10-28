@@ -6,6 +6,7 @@ install:
 		mkdir -p $(GEDIT_PLUGIN_DIR);\
 	fi
 	@echo "installing phpkit plugin";
+	@rm -rf $(GEDIT_PLUGIN_DIR)/phpkit*;
 	@cp -R $(PHPKIT_DIR)/plugin/phpkit* $(GEDIT_PLUGIN_DIR);
 	@rm -rf $(GEDIT_PLUGIN_DIR)/phpkit/*.py[co];
 
