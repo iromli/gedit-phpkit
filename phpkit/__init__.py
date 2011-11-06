@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-
-# Gedit PythonKit plugin
-# Copyright 2011 Isman Firmansyah <izman.romli@gmail.com>
-
-import gedit
+from gi.repository import GObject, Gedit
 from completion import PHPProvider
 
 
@@ -46,7 +42,11 @@ class PHPKitWindow:
         self.remove_provider(tab.get_view())
 
 
-class PHPKitPlugin(gedit.Plugin):
+class PHPKitPlugin(GObject.Object, Gedit.WindowActivatable):
+
+    __gtype_name__ = "PHPKitPlugin"
+
+    window = GObject.property(type=Gedit.Window)
 
     WINDOW_DATA_KEY = "PHPKitData"
 

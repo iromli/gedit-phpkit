@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-
-import gobject
+from gi.repository import GObject
 import gtksourceview2 as gsv
 import os
 from gettext import gettext as _
@@ -13,10 +12,10 @@ except ImportError:
     import simplejson as json
 
 
-class PHPProposal(gobject.GObject, gsv.CompletionProposal):
+class PHPProposal(GObject.Object, gsv.CompletionProposal):
 
     def __init__(self, proposal):
-        gobject.GObject.__init__(self)
+        GObject.Object.__init__(self)
         self.proposal = proposal
 
     def do_get_text(self):
@@ -72,14 +71,14 @@ class PHPProposal(gobject.GObject, gsv.CompletionProposal):
         return self.proposal.get('type', '') == 'interface'
 
 
-class PHPProvider(gobject.GObject, gsv.CompletionProvider):
+class PHPProvider(GObject.Object, gsv.CompletionProvider):
 
     MARK_NAME = 'PHPProviderCompletionMark'
 
     BUNDLES = {}
 
     def __init__(self, plugin):
-        gobject.GObject.__init__(self)
+        GObject.Object.__init__(self)
         self.mark = None
         self._plugin = plugin
         self.bundles_root = os.path.join(os.path.dirname(__file__), 'bundles')
