@@ -11,7 +11,7 @@ install:
 
 uninstall:
 	@echo "uninstalling phpkit plugin";
-	@rm -rf phpkit*;
+	@rm -rf $(GEDIT_PLUGIN_DIR)/phpkit*;
 
 symlink:
 	@echo "symlinking phpkit plugin";
