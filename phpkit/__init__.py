@@ -3,28 +3,35 @@ from gi.repository import GObject, Gedit
 from completion import PHPProvider
 
 
-class PHPKitWindow:
+class PHPKitPlugin(GObject.Object, Gedit.WindowActivatable):
 
-    def __init__(self, plugin, window):
-        self._window = window
-        self._plugin = plugin
-        self._provider = PHPProvider(plugin)
-        for view in self._window.get_views():
+    __gtype_name__ = "PHPKitPlugin"
+
+    window = GObject.property(type=Gedit.Window)
+
+    WINDOW_DATA_KEY = "PHPKitData"
+
+    def __init__(self):
+        GObject.Object.__init__(self)
+
+    def do_activate(self):
+        self._provider = PHPProvider(self)
+        for view in self.window.get_views():
             self.add_provider(view)
-        self._tab_added_id = self._window.connect('tab-added',
+        self._tab_added_id = self.window.connect('tab-added',
             self.on_tab_added)
-        self._tab_removed_id = self._window.connect('tab-removed',
+        self._tab_removed_id = self.window.connect('tab-removed',
             self.on_tab_removed)
+        self.window.set_data(self.WINDOW_DATA_KEY, self.window)
 
-    def deactivate(self):
-        for view in self._window.get_views():
+    def do_deactivate(self):
+        for view in self.window.get_views():
             self.remove_provider(view)
-        self._window.disconnect(self._tab_added_id)
-        self._window.disconnect(self._tab_removed_id)
-        self._window = None
-        self._plugin = None
+        self.window.disconnect(self._tab_added_id)
+        self.window.disconnect(self._tab_removed_id)
+        self.window.set_data(self.WINDOW_DATA_KEY, None)
 
-    def update_ui(self):
+    def do_update_state(self):
         pass
 
     def add_provider(self, view):
@@ -40,26 +47,3 @@ class PHPKitWindow:
 
     def on_tab_removed(self, window, tab):
         self.remove_provider(tab.get_view())
-
-
-class PHPKitPlugin(GObject.Object, Gedit.WindowActivatable):
-
-    __gtype_name__ = "PHPKitPlugin"
-
-    window = GObject.property(type=Gedit.Window)
-
-    WINDOW_DATA_KEY = "PHPKitData"
-
-    def __init__(self):
-        gedit.Plugin.__init__(self)
-
-    def activate(self, window):
-        helper = PHPKitWindow(self, window)
-        window.set_data(self.WINDOW_DATA_KEY, helper)
-
-    def deactivate(self, window):
-        window.get_data(self.WINDOW_DATA_KEY).deactivate()
-        window.set_data(self.WINDOW_DATA_KEY, None)
-
-    def update_ui(self, window):
-        window.get_data(self.WINDOW_DATA_KEY).update_ui()
