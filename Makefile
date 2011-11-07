@@ -1,5 +1,4 @@
-PHPKIT_DIR = $(dir $(CURDIR)/$(lastword $(MAKEFILE_LIST)))
-GEDIT_PLUGIN_DIR = ~/.gnome2/gedit/plugins
+GEDIT_PLUGIN_DIR = ~/.local/share/gedit/plugins
 
 install:
 	@if [ ! -d $(GEDIT_PLUGIN_DIR) ]; then \
@@ -7,7 +6,7 @@ install:
 	fi
 	@echo "installing phpkit plugin";
 	@rm -rf $(GEDIT_PLUGIN_DIR)/phpkit*;
-	@cp -R $(PHPKIT_DIR)/plugin/phpkit* $(GEDIT_PLUGIN_DIR);
+	@cp -R phpkit* $(GEDIT_PLUGIN_DIR);
 	@rm -rf $(GEDIT_PLUGIN_DIR)/phpkit/*.py[co];
 
 uninstall:
@@ -17,5 +16,5 @@ uninstall:
 symlink:
 	@echo "symlinking phpkit plugin";
 	@rm -rf $(GEDIT_PLUGIN_DIR)/phpkit*;
-	@ln -s $(PHPKIT_DIR)/plugin/phpkit $(GEDIT_PLUGIN_DIR)/phpkit;
-	@ln -s $(PHPKIT_DIR)/plugin/phpkit.gedit-plugin $(GEDIT_PLUGIN_DIR)/phpkit.gedit-plugin;
+	@ln -s phpkit $(GEDIT_PLUGIN_DIR)/phpkit;
+	@ln -s phpkit.plugin $(GEDIT_PLUGIN_DIR)/phpkit.plugin;

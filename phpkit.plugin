@@ -1,10 +1,10 @@
-[Gedit Plugin]
+[Plugin]
 Loader=python
 Module=phpkit
-IAge=2
-Name=PHP Kit
+IAge=3
+Name=PHPKit
 Description=A toolkit to ease PHP development
 Icon=gedit-plugin
-Authors=Isman Firmansyah <izman.romli@gmail.com>
+Authors=Isman Firmansyah <isman.firmansyah@gmail.com>
 Copyright=Copyright © 2011 Isman Firmansyah
 Website=http://github.com/iromli/gedit-phpkit

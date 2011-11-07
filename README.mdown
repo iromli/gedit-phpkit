@@ -1,6 +1,6 @@
 # Gedit PHPKit Plugin
 
-A toolkit to ease PHP development for Gedit 2.
+A toolkit to ease PHP development for Gedit.
 
 ## Batteries Included
 

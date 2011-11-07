@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-
-import gobject
-import gtksourceview2 as gsv
+from gi.repository import GObject, GtkSource, GLib
 import os
 from gettext import gettext as _
 from glob import glob
@@ -13,10 +11,10 @@ except ImportError:
     import simplejson as json
 
 
-class PHPProposal(gobject.GObject, gsv.CompletionProposal):
+class PHPProposal(GObject.Object, GtkSource.CompletionProposal):
 
     def __init__(self, proposal):
-        gobject.GObject.__init__(self)
+        GObject.Object.__init__(self)
         self.proposal = proposal
 
     def do_get_text(self):
@@ -52,7 +50,7 @@ class PHPProposal(gobject.GObject, gsv.CompletionProposal):
     def do_get_info(self):
         info = self.proposal['info']
         if info:
-            return gobject.markup_escape_text(info)
+            return GLib.markup_escape_text(info)
         return _('Info is not available')
 
     def format_params(self):
@@ -72,14 +70,14 @@ class PHPProposal(gobject.GObject, gsv.CompletionProposal):
         return self.proposal.get('type', '') == 'interface'
 
 
-class PHPProvider(gobject.GObject, gsv.CompletionProvider):
+class PHPProvider(GObject.Object, GtkSource.CompletionProvider):
 
     MARK_NAME = 'PHPProviderCompletionMark'
 
     BUNDLES = {}
 
     def __init__(self, plugin):
-        gobject.GObject.__init__(self)
+        GObject.Object.__init__(self)
         self.mark = None
         self._plugin = plugin
         self.bundles_root = os.path.join(os.path.dirname(__file__), 'bundles')
@@ -88,10 +86,9 @@ class PHPProvider(gobject.GObject, gsv.CompletionProvider):
         return _('PHP')
 
     def do_get_activation(self):
-        return gsv.COMPLETION_ACTIVATION_USER_REQUESTED
+        return GtkSource.CompletionActivation.USER_REQUESTED
 
     def do_activate_proposal(self, proposal, textiter):
-        # TODO: consider to use placeholder similar to snippet's magic
         buff = textiter.get_buffer()
         buff.begin_user_action()
         text = proposal.do_get_text()
@@ -114,13 +111,6 @@ class PHPProvider(gobject.GObject, gsv.CompletionProvider):
         if not lang or lang.get_id() != 'php':
             return False
         return True
-
-    def do_get_start_iter(self, context, proposal):
-        buff = context.get_iter().get_buffer()
-        mark = buff.get_mark(self.MARK_NAME)
-        if not mark:
-            return None
-        return buff.get_iter_at_mark(mark)
 
     def do_populate(self, context):
         textiter = context.get_iter()
@@ -191,5 +181,5 @@ class PHPProvider(gobject.GObject, gsv.CompletionProvider):
         return start, start.get_text(textiter)
 
 
-gobject.type_register(PHPProposal)
-gobject.type_register(PHPProvider)
+GObject.type_fundamental(PHPProposal)
+GObject.type_fundamental(PHPProvider)
