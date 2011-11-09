@@ -80,7 +80,8 @@ class PHPProvider(GObject.Object, GtkSource.CompletionProvider):
         GObject.Object.__init__(self)
         self.mark = None
         self._plugin = plugin
-        self.bundles_root = os.path.join(os.path.dirname(__file__), 'bundles')
+        self.bundles_root = os.path.join(os.getenv('HOME'), '.reflextor',
+            'bundles')
 
     def do_get_name(self):
         return _('PHP')
